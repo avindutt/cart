@@ -3,12 +3,7 @@ import React from 'react';
 class CartItem extends React.Component{ //CartItem will inherit some features from class component.
     constructor(){
         super(); //this will call the constructor of component class in React.
-        this.state = {
-            price: 999,
-            title: 'Phone',
-            qty: 1,
-            img: ''
-        }
+        
       //  this.increaseQuantity = this.increaseQuantity.bind(this); //binding this with increaseQuantity function otherwise value of this will be lost.
     }
 
@@ -28,8 +23,9 @@ class CartItem extends React.Component{ //CartItem will inherit some features fr
         //     qty : this.state.qty + 1
         // });
 
-        //since three setState functions are being called but increment is only by 1 in qty object. This is because React only runs last function instead
-        //of all the repeated ones. This process is called BATCHING. React re-renders the object only once.
+        //since three setState functions are being called but increment is only by 1 in qty object and setState call invokes render function but here object is rendering only once. So why this happens? This is because React only runs last function instead
+        //of all the repeated ones. This process is called BATCHING. React re-renders the object only once. Here setState is asynchronous call. 
+        //Remember BATCHING is not applicable in Promises and setState function will act like a synchronous call inside it. This glitch might gets updated in next update of React.
 
         //setState second form
         // this.setState((prevState) => {
@@ -50,7 +46,8 @@ class CartItem extends React.Component{ //CartItem will inherit some features fr
     }
 
     render(){
-        const{ price, title, qty } = this.state; //this is object destructuring(i.e. we are getting the values of price, tile, qty from this.state)
+        console.log('this.props', this.props);
+        const{ price, title, qty } = this.props.product; //this is object destructuring(i.e. we are getting the values of price, tile, qty from this.state)
         return(
             <>
             <div className='cart-item'>

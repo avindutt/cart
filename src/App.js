@@ -1,6 +1,7 @@
 import React from 'react';
 import Cart from './Cart';
 import Navbar from './Navbar';
+import { firestore } from "./firebase";
 
 class App extends React.Component {
 
@@ -31,6 +32,28 @@ class App extends React.Component {
             }
         ]
     }
+}
+
+componentDidMount() {
+    
+  //fetching all the products from the cloud firestore
+  firestore
+  //query for fecthing the product which we want as per our query
+  .collection("products") //getting all the products
+  // .where('price','>=', 999) // after fetching db we should write query
+  .onSnapshot(snapshot => {
+    const products = snapshot.docs.map(doc => {
+      const data = doc.data();
+      data["id"] = doc.id;
+      return data;
+    });
+  
+    this.setState({
+       products: products,
+       loading: false 
+    });
+  
+  });
 }
 
 handleIncreaseQuantity = (product) => {

@@ -8,41 +8,22 @@ class App extends React.Component {
   constructor(){
     super();
     this.state = {
-        products: [
-            {
-                price : 1000,
-                title : 'Watch',
-                qty : 1,
-                img : 'https://images.unsplash.com/photo-1547996160-81dfa63595aa?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxzZWFyY2h8MTV8fHdhdGNofGVufDB8fDB8fA%3D%3D&auto=format&fit=crop&w=700&q=60',
-                id : 1
-            },
-            {
-                price : 500,
-                title : 'Machine',
-                qty : 1,
-                img : 'https://images.unsplash.com/photo-1666214282554-39104df48982?ixlib=rb-4.0.3&ixid=MnwxMjA3fDF8MHxzZWFyY2h8MXx8bWFjaGluZXxlbnwwfHwwfHw%3D&auto=format&fit=crop&w=500&q=60',
-                id : 2
-            },
-            {
-                price : 200,
-                title : 'Laptop',
-                qty : 1,
-                img : 'https://images.unsplash.com/photo-1496181133206-80ce9b88a853?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxzZWFyY2h8Mnx8bGFwdG9wfGVufDB8fDB8fA%3D%3D&auto=format&fit=crop&w=500&q=60',
-                id: 3
-            }
-        ]
+        products: [],
+        loading : true
     }
+    this.db = firestore;
 }
 
 componentDidMount() {
     
   //fetching all the products from the cloud firestore
-  firestore
-  //query for fecthing the product which we want as per our query
+  //firestore
+  this.db
+  //query for fetching the product which we want as per our query
   .collection("products") //getting all the products
   // .where('price','>=', 999) // after fetching db we should write query
-  .onSnapshot(snapshot => {
-    const products = snapshot.docs.map(doc => {
+  .onSnapshot((snapshot) => { //snapshot gives the snapshot of the database at a point of time
+    const products = snapshot.docs.map((doc) => { //here docs is an array containing the main data frmo database in snapshot
       const data = doc.data();
       data["id"] = doc.id;
       return data;
@@ -113,20 +94,36 @@ getCartTotal(){
   return total;
 }
 
+addProduct = () => {
+  this.db
+  .collection('products')
+  .add({
+    img : '',
+    price: 933,
+    qty: 1,
+    title: 'Washing Machine'
+  })
+  .then((docRef) => {
+    console.log(docRef);
+  })
+  .catch((error) => {
+    console.log('Error: ', error);
+  })
+}
+
   render () {
-    const { products } = this.state;
+    const { products, loading } = this.state;
     return (
       <div className="App">
-        <Navbar
-        count = {this.getCartCount()}
-        />
+        <Navbar count = {this.getCartCount()} />
+        <button onClick={this.addProduct} style ={{padding: 20, fontSize: 15}}>Add a product</button>
         <Cart
          products = {products}
          onIncreaseQuantity = {this.handleIncreaseQuantity} 
          onDecreaseQuantity = {this.handleDecreaseQuantity}
          onDeleteItem = {this.handleDeleteProduct}
          />
-
+         {loading && <h1>Loading...</h1>}
          <div style = { {padding: 10, fontSize: 20} }>TOTAL : {this.getCartTotal()}</div>
       </div>
     );
